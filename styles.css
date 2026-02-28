@@ -89,16 +89,16 @@ p, span, label, button, textarea, select { font-family: 'DM Sans', sans-serif; }
 
 /* ─── How It Works ─── */
 .hiw-container {
-  flex: 1; display: flex; flex-direction: column; align-items: center;
+  flex: 1; display: flex; flex-direction: column;
   padding: 40px 28px 28px; overflow-y: auto;
 }
 .hiw-title {
   font-size: 32px; font-weight: 800; color: #4E2A84;
-  letter-spacing: 1px; margin-bottom: 28px; text-align: center;
+  letter-spacing: 1px; margin-bottom: 28px;
 }
 .hiw-steps {
-  display: flex; flex-direction: column; align-items: center; gap: 0;
-  margin-bottom: 28px; width: 100%;
+  display: flex; flex-direction: column; align-items: flex-start; gap: 0;
+  margin-bottom: 28px;
 }
 .hiw-step {
   display: flex; align-items: center; gap: 16px; padding: 4px 0;
@@ -118,7 +118,7 @@ p, span, label, button, textarea, select { font-family: 'DM Sans', sans-serif; }
 .hiw-notice {
   display: flex; align-items: center; gap: 12px;
   background: #F0ECF5; border-radius: 14px; padding: 16px 18px;
-  margin-bottom: 20px; width: 100%;
+  margin-bottom: 20px;
   font-size: 13px; color: #555; line-height: 1.5;
 }
 
