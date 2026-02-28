@@ -3,549 +3,394 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<meta name="theme-color" content="#0D0A17">
+<meta name="theme-color" content="#4E2A84">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="mobile-web-app-capable" content="yes">
-<title>CatsOnVigil</title>
-<link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIkNhdHNPblZpZ2lsIiwKICAic2hvcnRfbmFtZSI6ICJDYXRzT25WaWdpbCIsCiAgInN0YXJ0X3VybCI6ICIuIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjMEQwQTE3IiwKICAidGhlbWVfY29sb3IiOiAiIzBEMEExNyIsCiAgIm9yaWVudGF0aW9uIjogInBvcnRyYWl0IiwKICAiaWNvbnMiOiBbCiAgICB7CiAgICAgICJzcmMiOiAiZGF0YTppbWFnZS9zdmcreG1sLCUzQ3N2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCA1MTIgNTEyJyUzRSUzQ3JlY3Qgd2lkdGg9JzUxMicgaGVpZ2h0PSc1MTInIHJ4PSc5NicgZmlsbD0nJTIzQTg1NUY3JyAvJTNFJTNDdGV4dCB4PSc1MCUyNScgeT0nNTUlMjUnIGZvbnQtc2l6ZT0nMjgwJyB0ZXh0LWFuY2hvcj0nbWlkZGxlJyBmaWxsPSd3aGl0ZSclM0VOJTNDJTJGdGV4dCUzRSUzQyUyRnN2ZyUzRSIsCiAgICAgICJzaXplcyI6ICIxOTJ4MTkyIiwKICAgICAgInR5cGUiOiAiaW1hZ2Uvc3ZnK3htbCIsCiAgICAgICJwdXJwb3NlIjogImFueSBtYXNrYWJsZSIKICAgIH0KICBdCn0=">
+<title>PurpleFix</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<style>
-  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  html, body { 
-    width: 100%; height: 100%; overflow: hidden;
-    background: #0D0A17; color: #F0F0F0;
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    -webkit-font-smoothing: antialiased;
-  }
-  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Mono:wght@700&display=swap');
-  
-  #app { width: 100%; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
-  
-  .screen {
-    flex: 1; display: flex; flex-direction: column;
-    opacity: 1; transition: opacity 0.25s ease;
-    overflow: hidden;
-  }
-  .screen.fading { opacity: 0; }
-  .screen.hidden { display: none; }
-
-  .status-bar {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 12px 24px 6px; font-size: 13px; font-weight: 600;
-    position: relative; z-index: 10;
-  }
-
-  .btn-primary {
-    width: 100%; padding: 18px 24px; border-radius: 16px; border: none;
-    background: linear-gradient(135deg, #A855F7, #C084FC);
-    color: white; font-size: 16px; font-weight: 700; cursor: pointer;
-    box-shadow: 0 8px 32px rgba(168, 85, 247, 0.35);
-    font-family: inherit; letter-spacing: 0.3px;
-    transition: transform 0.15s, opacity 0.2s;
-    display: flex; align-items: center; justify-content: center; gap: 12px;
-  }
-  .btn-primary:active { transform: scale(0.97); }
-  .btn-primary:disabled { opacity: 0.45; }
-
-  .btn-secondary {
-    width: 100%; padding: 20px 24px; border-radius: 16px;
-    border: 1.5px solid #2A2050; background: #171331;
-    color: #F0F0F0; font-size: 16px; font-weight: 700; cursor: pointer;
-    font-family: inherit; display: flex; align-items: center; gap: 14px;
-    transition: transform 0.15s, border-color 0.2s;
-  }
-  .btn-secondary:active { transform: scale(0.97); border-color: #A855F7; }
-
-  .btn-green {
-    width: 100%; padding: 18px 0; border-radius: 16px; border: none;
-    background: linear-gradient(135deg, #2ECC71, #27AE60);
-    color: white; font-size: 16px; font-weight: 700; cursor: pointer;
-    box-shadow: 0 8px 32px rgba(46, 204, 113, 0.25);
-    font-family: inherit; transition: transform 0.15s; flex-shrink: 0;
-  }
-  .btn-green:active { transform: scale(0.97); }
-
-  .btn-back {
-    width: 44px; height: 44px; border-radius: 12px; border: 1px solid #2A2050;
-    background: #171331; cursor: pointer; display: flex;
-    align-items: center; justify-content: center; flex-shrink: 0;
-  }
-
-  .badge {
-    margin-left: auto; background: #A855F7; color: white;
-    width: 26px; height: 26px; border-radius: 50%; font-size: 12px;
-    font-weight: 700; display: flex; align-items: center; justify-content: center;
-  }
-
-  .issue-card {
-    background: #171331; border-radius: 16px; padding: 18px;
-    border: 1px solid #2A2050; animation: slideUp 0.3s ease-out both;
-  }
-  .issue-card .status {
-    background: rgba(255, 170, 50, 0.15); color: #FFAA32;
-    padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 600;
-  }
-  
-  .issue-textarea {
-    flex: 1; border-radius: 16px; padding: 18px;
-    border: 1.5px solid #2A2050; background: #171331;
-    color: #F0F0F0; font-size: 15px; font-family: inherit;
-    resize: none; outline: none; line-height: 1.6;
-    transition: border-color 0.2s;
-  }
-  .issue-textarea:focus { border-color: #A855F7; }
-  .issue-textarea::placeholder { color: #9B8FBF; opacity: 0.6; }
-
-  /* Leaflet map */
-  #leaflet-map {
-    width: 100%; flex: 1; min-height: 0;
-    border-radius: 16px; overflow: hidden;
-    border: 1.5px solid #2A2050; position: relative; z-index: 1;
-  }
-  .leaflet-tile-pane { filter: brightness(0.65) contrast(1.15) saturate(0.7) hue-rotate(210deg) invert(1) brightness(0.9) contrast(1.2); }
-  .leaflet-control-attribution { display: none !important; }
-  .leaflet-control-zoom { display: none !important; }
-
-  .location-address-box {
-    background: #171331; border-radius: 12px; padding: 14px 16px;
-    border: 1px solid #2A2050; display: flex; align-items: flex-start; gap: 10px;
-    min-height: 52px; flex-shrink: 0;
-  }
-  .addr-text { font-size: 14px; font-weight: 500; line-height: 1.4; flex: 1; }
-  .location-hint {
-    font-size: 12px; color: #9B8FBF; text-align: center;
-    display: flex; align-items: center; justify-content: center; gap: 6px;
-    opacity: 0.8; flex-shrink: 0;
-  }
-  .loading-spinner {
-    display: inline-block; width: 14px; height: 14px;
-    border: 2px solid #2A2050; border-top: 2px solid #A855F7;
-    border-radius: 50%; animation: spin 0.7s linear infinite;
-    vertical-align: middle;
-  }
-
-  .camera-container { flex: 1; display: flex; flex-direction: column; background: #000; position: relative; overflow: hidden; }
-  .camera-video { flex: 1; object-fit: cover; width: 100%; }
-  .camera-fallback {
-    flex: 1; display: flex; align-items: center; justify-content: center;
-    flex-direction: column; gap: 16px; color: #9B8FBF;
-  }
-  .camera-controls {
-    position: absolute; bottom: 0; left: 0; right: 0;
-    padding: 30px 0 env(safe-area-inset-bottom, 40px);
-    display: flex; justify-content: center;
-    background: linear-gradient(transparent, rgba(0,0,0,0.8));
-  }
-  .capture-btn {
-    width: 72px; height: 72px; border-radius: 50%; border: 4px solid white;
-    background: rgba(255,255,255,0.2); cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .capture-btn:active { transform: scale(0.9); }
-  .capture-btn-inner { width: 56px; height: 56px; border-radius: 50%; background: white; }
-
-  .choice-btn {
-    flex: 1; aspect-ratio: 1; border-radius: 20px; border: 1.5px solid #2A2050;
-    background: #171331; display: flex; flex-direction: column;
-    align-items: center; justify-content: center; gap: 10px; cursor: pointer;
-    transition: transform 0.15s;
-  }
-  .choice-btn:active { transform: scale(0.95); }
-  .choice-btn.active { border-color: #A855F7; background: rgba(168, 85, 247, 0.12); }
-  .choice-btn.disabled { opacity: 0.5; cursor: default; }
-
-  .success-circle {
-    width: 100px; height: 100px; border-radius: 50%;
-    background: rgba(46, 204, 113, 0.25);
-    display: flex; align-items: center; justify-content: center;
-    animation: pulseCheck 0.6s ease-out;
-  }
-  .progress-bar { width: 40px; height: 4px; border-radius: 2px; background: #221C42; overflow: hidden; }
-  .progress-bar-fill { width: 100%; height: 100%; background: #2ECC71; border-radius: 2px; animation: shrink 2.5s linear forwards; }
-
-  @keyframes slideUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
-  @keyframes pulseCheck { 0% { transform: scale(0); opacity: 0; } 50% { transform: scale(1.15); } 100% { transform: scale(1); opacity: 1; } }
-  @keyframes shrink { from { transform: scaleX(1); transform-origin: left; } to { transform: scaleX(0); transform-origin: left; } }
-  @keyframes spin { to { transform: rotate(360deg); } }
-</style>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <div id="app">
-  <div class="status-bar">
-    <span id="clock"></span>
-    <div style="display:flex;gap:6px;align-items:center">
-      <svg width="16" height="12" viewBox="0 0 16 12"><path d="M1 8h2v4H1zM5 5h2v7H5zM9 3h2v9H9zM13 0h2v12h-2z" fill="#F0F0F0"/></svg>
-      <svg width="20" height="12" viewBox="0 0 20 12"><rect x="0" y="0" width="18" height="12" rx="2" stroke="#F0F0F0" stroke-width="1.5" fill="none"/><rect x="18.5" y="3.5" width="1.5" height="5" rx="0.5" fill="#F0F0F0"/><rect x="2" y="2" width="12" height="8" rx="1" fill="#2ECC71"/></svg>
-    </div>
-  </div>
 
-  <!-- LOGIN -->
-  <div id="screen-login" class="screen" style="align-items:center;justify-content:center;padding:32px;gap:40px;">
-    <div style="text-align:center">
-      <div style="width:80px;height:80px;border-radius:20px;margin:0 auto 24px;background:linear-gradient(135deg,#A855F7,#C084FC);display:flex;align-items:center;justify-content:center;box-shadow:0 12px 40px rgba(168,85,247,0.35);">
-        <span style="font-family:'Space Mono',monospace;font-size:36px;font-weight:700;color:white;">N</span>
+  <!-- ═══════ SCREEN: LANDING ═══════ -->
+  <div id="s-landing" class="screen active">
+    <div class="screen-center">
+      <div class="landing-logo">
+        <svg width="88" height="88" viewBox="0 0 120 120" fill="none">
+          <rect width="120" height="120" rx="28" fill="#4E2A84"/>
+          <text x="50%" y="56%" dominant-baseline="middle" text-anchor="middle" fill="white" font-family="'DM Sans',sans-serif" font-size="62" font-weight="800">N</text>
+          <rect x="16" y="90" width="88" height="3" rx="1.5" fill="rgba(255,255,255,0.25)"/>
+        </svg>
       </div>
-      <h1 style="font-family:'Space Mono',monospace;font-size:28px;font-weight:700;letter-spacing:-0.5px;">CatsOnVigil</h1>
-      <p style="color:#9B8FBF;font-size:14px;margin-top:8px;line-height:1.5;">Report & track civic issues<br>on the campus</p>
+      <h1 class="landing-title">PurpleFix</h1>
+      <p class="landing-desc">Report facility maintenance issues in a few quick and easy steps.</p>
+      <div style="width:100%;max-width:340px;margin-top:12px;">
+        <button class="btn-primary" onclick="App.start()">
+          Get Started
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+      <div class="landing-footer">Northwestern University • Facilities</div>
     </div>
-    <button class="btn-primary" onclick="goTo('home')" style="letter-spacing:1px;">LOGIN</button>
   </div>
 
-  <!-- HOME -->
-  <div id="screen-home" class="screen hidden" style="align-items:center;justify-content:center;padding:32px;gap:20px;">
-    <div style="text-align:center;margin-bottom:20px;">
-      <h2 style="font-size:22px;font-weight:700;">What would you like to do?</h2>
-      <p style="color:#9B8FBF;font-size:13px;margin-top:6px;">Report a new issue or track existing ones</p>
+  <!-- ═══════ SCREEN: HOW IT WORKS (first visit only) ═══════ -->
+  <div id="s-howitworks" class="screen">
+    <div class="hiw-container">
+      <h1 class="hiw-title">HOW IT WORKS</h1>
+
+      <div class="hiw-steps">
+        <!-- Step 1 -->
+        <div class="hiw-step">
+          <div class="hiw-icon-circle">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#4E2A84" stroke-width="2" stroke-linecap="round">
+              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>
+            </svg>
+          </div>
+          <div class="hiw-text">
+            <span class="hiw-label">Capture/Upload</span>
+            <span class="hiw-sub">Take a photo of the issue</span>
+          </div>
+        </div>
+        <div class="hiw-arrow">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4E2A84" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="hiw-step">
+          <div class="hiw-icon-circle">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#4E2A84" stroke-width="2">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+            </svg>
+          </div>
+          <div class="hiw-text">
+            <span class="hiw-label">Locate</span>
+            <span class="hiw-sub">Confirm where it happened</span>
+          </div>
+        </div>
+        <div class="hiw-arrow">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4E2A84" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="hiw-step">
+          <div class="hiw-icon-circle">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#4E2A84" stroke-width="2" stroke-linecap="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+            </svg>
+          </div>
+          <div class="hiw-text">
+            <span class="hiw-label">Describe</span>
+            <span class="hiw-sub">Tell us what needs fixing</span>
+          </div>
+        </div>
+        <div class="hiw-arrow">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4E2A84" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="hiw-step">
+          <div class="hiw-icon-circle">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#4E2A84" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+          </div>
+          <div class="hiw-text">
+            <span class="hiw-label">Submit</span>
+            <span class="hiw-sub">Send your report</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hiw-notice">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4E2A84" stroke-width="2" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+        <span>We need camera/storage and location permissions for this to work.</span>
+      </div>
+
+      <button class="btn-primary" onclick="App.goTo('home')" style="margin-top:8px;">
+        Continue
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
     </div>
-    <button class="btn-primary" onclick="goTo('camera')" style="justify-content:flex-start;padding-left:24px;">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-      Click & Report
-    </button>
-    <button class="btn-secondary" onclick="goTo('track')">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-      Track
-      <span id="badge-count" class="badge" style="display:none;">0</span>
-    </button>
   </div>
 
-  <!-- CAMERA -->
-  <div id="screen-camera" class="screen hidden">
-    <div class="camera-container">
-      <video id="camera-video" class="camera-video" autoplay playsinline muted style="display:none;"></video>
-      <div id="camera-fallback" class="camera-fallback">
-        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#9B8FBF" stroke-width="1.5"><rect x="2" y="6" width="16" height="12" rx="2"/><path d="M18 9l4-2v10l-4-2z"/></svg>
-        <span style="font-size:14px;">Camera preview</span>
-        <span style="font-size:12px;opacity:0.6;">Tap capture to take a photo</span>
+  <!-- ═══════ SCREEN: HOME (Report / Track) ═══════ -->
+  <div id="s-home" class="screen">
+    <div class="screen-center">
+      <div style="text-align:center;margin-bottom:32px;">
+        <svg width="56" height="56" viewBox="0 0 120 120" fill="none" style="margin-bottom:12px;">
+          <rect width="120" height="120" rx="28" fill="#4E2A84"/>
+          <text x="50%" y="56%" dominant-baseline="middle" text-anchor="middle" fill="white" font-family="'DM Sans',sans-serif" font-size="62" font-weight="800">N</text>
+        </svg>
+        <h2 style="font-size:24px;font-weight:800;margin-bottom:6px;">What would you like to do?</h2>
+        <p style="font-size:14px;color:#777;">Report a new issue or check existing ones</p>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:14px;width:100%;max-width:360px;">
+        <button class="home-action-btn" onclick="App.goTo('media')">
+          <div class="home-action-icon" style="background:rgba(78,42,132,0.1);">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#4E2A84" stroke-width="2" stroke-linecap="round">
+              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>
+            </svg>
+          </div>
+          <div class="home-action-text">
+            <span class="home-action-label">Report an Issue</span>
+            <span class="home-action-sub">Snap a photo and submit a report</span>
+          </div>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4E2A84" stroke-width="2.5" stroke-linecap="round" style="flex-shrink:0;"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+
+        <button class="home-action-btn" onclick="App.goTo('track')">
+          <div class="home-action-icon" style="background:rgba(78,42,132,0.08);">
+            <svg width="28" height="28" viewBox="0 0 64 64" fill="none" stroke="#4E2A84" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 12h28a14 14 0 0 1 0 28H18a14 14 0 0 1 0-28z"/>
+              <path d="M18 20h28a6 6 0 0 1 0 12H18a6 6 0 0 1 0-12z"/>
+              <line x1="32" y1="40" x2="32" y2="54"/>
+              <line x1="24" y1="54" x2="40" y2="54"/>
+            </svg>
+          </div>
+          <div class="home-action-text">
+            <span class="home-action-label">Track Reports</span>
+            <span class="home-action-sub">View your submitted issues</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+            <span id="track-badge" class="track-badge" style="display:none;">0</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4E2A84" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ SCREEN: MEDIA CHOOSE ═══════ -->
+  <div id="s-media" class="screen" style="padding:28px;">
+    <div id="media-steps" style="margin-bottom:16px;"></div>
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;">
+      <h2 style="font-size:24px;font-weight:700;text-align:center;">Capture the issue</h2>
+      <p style="font-size:14px;color:#777;text-align:center;">Take a photo or upload one from your gallery</p>
+      <div style="display:flex;gap:16px;width:100%;max-width:340px;">
+        <div class="choice-card" onclick="App.openCamera()">
+          <div class="choice-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#4E2A84" stroke-width="2" stroke-linecap="round">
+              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>
+            </svg>
+          </div>
+          <span style="font-size:15px;font-weight:700;color:#1a1a1a;">Take Photo</span>
+        </div>
+        <div class="choice-card" onclick="document.getElementById('file-input').click()">
+          <div class="choice-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#4E2A84" stroke-width="2" stroke-linecap="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+          </div>
+          <span style="font-size:15px;font-weight:700;color:#1a1a1a;">Upload Photo</span>
+        </div>
+      </div>
+      <input type="file" id="file-input" accept="image/*" style="display:none;" onchange="App.handleFileUpload(event)">
+    </div>
+  </div>
+
+  <!-- ═══════ SCREEN: CAMERA ═══════ -->
+  <div id="s-camera" class="screen">
+    <div class="camera-wrap">
+      <video id="cam-video" class="camera-video" autoplay playsinline muted></video>
+      <div id="cam-fallback" class="cam-fallback" style="display:none;">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="1.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        <span>Camera not available</span>
+        <button class="btn-sm" onclick="App.goTo('media')">← Go Back</button>
       </div>
       <div class="camera-controls">
-        <button class="capture-btn" onclick="capturePhoto()"><div class="capture-btn-inner"></div></button>
+        <button onclick="App.goTo('media')" class="cam-back-btn">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        </button>
+        <button class="shutter" onclick="App.capturePhoto()"><div class="shutter-inner"></div></button>
+        <div style="width:44px;"></div>
       </div>
     </div>
   </div>
 
-  <!-- LOCATION -->
-  <div id="screen-location" class="screen hidden" style="padding:16px;gap:10px;">
-    <h3 style="font-size:18px;font-weight:700;">Confirm your location</h3>
-    <p class="location-hint">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#C084FC" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
-      Drag the pin or tap the map to adjust
-    </p>
-    <div id="leaflet-map"></div>
-    <div class="location-address-box">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="#A855F7" stroke="none" style="flex-shrink:0;margin-top:2px;"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>
-      <span id="location-text" class="addr-text"><span class="loading-spinner"></span> Fetching address...</span>
+  <!-- ═══════ SCREEN: PREVIEW ═══════ -->
+  <div id="s-preview" class="screen" style="padding:24px;gap:20px;">
+    <h3 style="font-size:22px;font-weight:700;text-align:center;">Review your photo</h3>
+    <p style="font-size:13px;color:#888;text-align:center;">Make sure the issue is clearly visible</p>
+    <div class="preview-image-wrap">
+      <img id="preview-img" src="" alt="Preview">
     </div>
-    <button class="btn-green" onclick="goTo('describe')">Confirm Location</button>
-  </div>
-
-  <!-- DESCRIBE -->
-  <div id="screen-describe" class="screen hidden" style="padding:20px;gap:20px;">
-    <h3 style="font-size:18px;font-weight:700;">Describe the issue</h3>
-    <p style="color:#9B8FBF;font-size:13px;">Choose how you'd like to report</p>
-    <div id="desc-choices" style="display:flex;gap:16px;margin-top:8px;">
-      <button class="choice-btn disabled">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#9B8FBF" stroke-width="2" stroke-linecap="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg>
-        <span style="color:#9B8FBF;font-size:13px;font-weight:600;">Voice</span>
-        <span style="color:#9B8FBF;font-size:10px;opacity:0.6;">Coming soon</span>
-      </button>
-      <button class="choice-btn active" onclick="showChat()">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-        <span style="color:#A855F7;font-size:13px;font-weight:600;">Chat</span>
-      </button>
-    </div>
-    <div id="desc-chat" style="display:none;flex:1;flex-direction:column;gap:16px;">
-      <textarea id="issue-input" class="issue-textarea" placeholder="Describe the issue you'd like to report..."></textarea>
-      <button class="btn-primary" id="done-btn" onclick="submitIssue()" disabled>Done</button>
+    <div style="display:flex;gap:12px;">
+      <button class="btn-secondary" id="retake-btn" onclick="App.retakePhoto()" style="flex:1;">🔄 Retake</button>
+      <button class="btn-green" id="confirm-photo-btn" onclick="App.confirmPhoto()" style="flex:1;">✅ Looks Good</button>
     </div>
   </div>
 
-  <!-- REPORTED -->
-  <div id="screen-reported" class="screen hidden" style="align-items:center;justify-content:center;padding:40px;gap:24px;">
-    <div class="success-circle">
-      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#2ECC71" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+  <!-- ═══════ SCREEN: LOCATION ═══════ -->
+  <div id="s-location" class="screen">
+    <div style="padding:16px 24px 10px;">
+      <div id="loc-steps"></div>
     </div>
-    <h2 style="font-size:22px;font-weight:700;text-align:center;">Issue Reported!</h2>
-    <p style="color:#9B8FBF;font-size:14px;text-align:center;line-height:1.5;">Your report has been submitted successfully.</p>
-    <div class="progress-bar"><div class="progress-bar-fill"></div></div>
+    <div style="padding:0 20px 4px;">
+      <h3 style="font-size:20px;font-weight:700;margin:8px 0 4px;text-align:center;">Select the location</h3>
+      <p style="font-size:12px;color:#888;display:flex;align-items:center;justify-content:center;gap:6px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4E2A84" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+        Drag the map to adjust the pin
+      </p>
+    </div>
+    <div class="map-wrap">
+      <div id="leaflet-map"></div>
+      <div class="map-pin">
+        <svg width="44" height="56" viewBox="0 0 44 56" style="filter:drop-shadow(0 4px 8px rgba(78,42,132,0.45))">
+          <path d="M22 52C22 52 40 31 40 20C40 10.1 31.9 2 22 2C12.1 2 4 10.1 4 20C4 31 22 52 22 52Z" fill="#4E2A84" stroke="white" stroke-width="2.5"/>
+          <circle cx="22" cy="20" r="7" fill="white"/>
+        </svg>
+      </div>
+    </div>
+    <div style="padding:12px 20px 24px;display:flex;flex-direction:column;gap:14px;">
+      <div class="addr-box">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="#4E2A84" stroke="none" style="flex-shrink:0;margin-top:2px;">
+          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z"/>
+        </svg>
+        <span id="addr-text" class="addr-text">
+          <span class="spinner spinner-purple"></span> Fetching address...
+        </span>
+      </div>
+      <button class="btn-primary" onclick="App.confirmLocation()">
+        Confirm Location
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </button>
+    </div>
   </div>
 
-  <!-- TRACK -->
-  <div id="screen-track" class="screen hidden" style="padding:20px;gap:16px;overflow-y:auto;">
-    <div style="display:flex;align-items:center;gap:12px;">
-      <button class="btn-back" onclick="goTo('home')">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F0F0F0" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+  <!-- ═══════ SCREEN: DESCRIBE ═══════ -->
+  <div id="s-describe" class="screen" style="padding:20px;overflow-y:auto;align-items:center;">
+    <div id="desc-steps" style="padding-bottom:12px;width:100%;"></div>
+    <h3 style="font-size:22px;font-weight:700;margin:8px 0 4px;text-align:center;">Describe the issue</h3>
+    <p style="font-size:13px;color:#888;margin-bottom:16px;text-align:center;">Select the object and issue type, or use voice input</p>
+
+    <!-- Voice / Form chooser -->
+    <div id="input-chooser" class="input-chooser">
+      <div class="choice-card" onclick="App.startVoice()" style="height:100px;">
+        <div class="choice-icon" style="width:44px;height:44px;border-radius:12px;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4E2A84" stroke-width="2" stroke-linecap="round">
+            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/>
+          </svg>
+        </div>
+        <span style="font-size:13px;font-weight:700;color:#1a1a1a;">Voice</span>
+      </div>
+      <div class="choice-card" onclick="App.showFormInput()" style="height:100px;">
+        <div class="choice-icon" style="width:44px;height:44px;border-radius:12px;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4E2A84" stroke-width="2" stroke-linecap="round">
+            <path d="M17 10H3M21 6H3M21 14H3M17 18H3"/>
+          </svg>
+        </div>
+        <span style="font-size:13px;font-weight:700;color:#1a1a1a;">Type</span>
+      </div>
+    </div>
+
+    <!-- Voice UI -->
+    <div id="voice-ui" style="display:none;" class="voice-ui">
+      <div class="voice-orb">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round">
+          <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+        </svg>
+      </div>
+      <span style="font-size:14px;color:#4E2A84;font-weight:600;">Listening...</span>
+      <button class="btn-secondary" onclick="App.stopVoice()" style="max-width:180px;">Stop Recording</button>
+    </div>
+
+    <!-- Voice result toolbar -->
+    <div id="voice-toolbar" style="display:none;gap:8px;margin-bottom:8px;justify-content:center;">
+      <button class="btn-sm" onclick="App.startVoice()">🎤 Add more</button>
+      <button class="btn-sm" onclick="App.showFormInput()">✏️ Edit</button>
+    </div>
+
+    <!-- Voice result text preview -->
+    <div id="voice-result-wrap" style="display:none;margin-bottom:12px;width:100%;">
+      <label class="form-label">Voice transcription</label>
+      <textarea id="voice-result" class="desc-textarea" style="min-height:80px;" placeholder="Your voice input will appear here..."></textarea>
+    </div>
+
+    <!-- Form-based input -->
+    <div id="form-input-wrap" style="display:none;flex-direction:column;gap:16px;flex:1;width:100%;">
+      <div>
+        <label class="form-label" for="object-select">Object</label>
+        <select id="object-select" class="form-select" onchange="App.updateSubmitBtn()">
+          <option value="">Select object...</option>
+          <option value="Microwave">Microwave</option>
+          <option value="Water Fountain">Water Fountain</option>
+          <option value="Elevator">Elevator</option>
+          <option value="Restroom">Restroom</option>
+          <option value="Lighting">Lighting</option>
+          <option value="Door/Lock">Door/Lock</option>
+          <option value="HVAC/Temperature">HVAC/Temperature</option>
+          <option value="Plumbing">Plumbing</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <div>
+        <label class="form-label" for="issue-select">Issue</label>
+        <select id="issue-select" class="form-select" onchange="App.updateSubmitBtn()">
+          <option value="">Select issue...</option>
+          <option value="Broken">Broken</option>
+          <option value="Dirty">Dirty</option>
+          <option value="Leaking">Leaking</option>
+          <option value="Not Working">Not Working</option>
+          <option value="Noisy">Noisy</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <div style="flex:1;display:flex;flex-direction:column;min-height:80px;">
+        <label class="form-label" for="issue-extra">Additional details (optional)</label>
+        <textarea id="issue-extra" class="desc-textarea" style="min-height:80px;flex:1;" placeholder="Add any extra details about the issue..."></textarea>
+      </div>
+    </div>
+
+    <!-- Submit -->
+    <div class="submit-dock" style="width:100%;">
+      <button class="btn-primary" id="submit-btn" onclick="App.submitReport()" disabled>
+        Submit Report
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg>
       </button>
-      <h3 style="font-size:18px;font-weight:700;">Your Reports</h3>
+    </div>
+  </div>
+
+  <!-- ═══════ SCREEN: SUCCESS ═══════ -->
+  <div id="s-success" class="screen">
+    <div class="screen-center" style="gap:28px;">
+      <div class="success-circle">
+        <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#27AE60" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <h2 style="font-size:28px;font-weight:700;text-align:center;">Issue Reported!</h2>
+      <p style="font-size:15px;color:#888;text-align:center;line-height:1.6;max-width:280px;">
+        Your report has been submitted. Our team will look into it.
+      </p>
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+    </div>
+  </div>
+
+  <!-- ═══════ SCREEN: TRACK ═══════ -->
+  <div id="s-track" class="screen" style="padding:20px;gap:16px;overflow-y:auto;">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;">
+      <button class="btn-back" onclick="App.goTo('home')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <h3 style="font-size:20px;font-weight:700;">Your Reports</h3>
     </div>
     <div id="issues-list"></div>
-    <div id="no-issues" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;opacity:0.5;">
-      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#9B8FBF" stroke-width="1.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-      <span style="color:#9B8FBF;font-size:14px;">No reports yet</span>
+    <div id="no-issues" class="no-issues">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#bbb" stroke-width="1.5" stroke-linecap="round">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+      </svg>
+      <span style="color:#999;font-size:15px;font-weight:500;">No reports yet</span>
+      <span style="color:#bbb;font-size:13px;">Issues you report will appear here</span>
     </div>
   </div>
+
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script>
-// ====== STATE ======
-let currentScreen = 'login';
-let cameraStream = null;
-let issues = [];
-let locationData = { lat: 42.0565, lng: -87.6753, text: 'Fetching address...' };
-let leafletMap = null;
-let leafletMarker = null;
-let geocodeTimeout = null;
-
-// ====== CLOCK ======
-function updateClock() {
-  document.getElementById('clock').textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-}
-updateClock();
-setInterval(updateClock, 10000);
-
-// ====== NAVIGATION ======
-function goTo(screen) {
-  const currentEl = document.getElementById('screen-' + currentScreen);
-  currentEl.classList.add('fading');
-  
-  setTimeout(() => {
-    currentEl.classList.add('hidden');
-    currentEl.classList.remove('fading');
-    
-    if (currentScreen === 'camera') stopCamera();
-    if (currentScreen === 'describe') resetDescribe();
-    if (currentScreen === 'location') destroyMap();
-    
-    if (screen === 'camera') startCamera();
-    if (screen === 'track') renderIssues();
-    
-    const nextEl = document.getElementById('screen-' + screen);
-    nextEl.classList.remove('hidden');
-    currentScreen = screen;
-    
-    if (screen === 'location') setTimeout(initMap, 80);
-  }, 250);
-}
-
-// ====== REVERSE GEOCODE via Nominatim ======
-function reverseGeocode(lat, lng) {
-  const el = document.getElementById('location-text');
-  el.innerHTML = '<span class="loading-spinner"></span> Fetching address...';
-  
-  fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1&zoom=18`, {
-    headers: { 'Accept-Language': 'en' }
-  })
-    .then(r => r.json())
-    .then(data => {
-      if (data && data.address) {
-        const a = data.address;
-        let parts = [];
-        
-        if (a.house_number && a.road) parts.push(a.house_number + ' ' + a.road);
-        else if (a.road) parts.push(a.road);
-        else if (a.building) parts.push(a.building);
-        else if (a.pedestrian) parts.push(a.pedestrian);
-        
-        if (a.neighbourhood) parts.push(a.neighbourhood);
-        if (a.suburb) parts.push(a.suburb);
-        if (a.city || a.town || a.village) parts.push(a.city || a.town || a.village);
-        if (a.state) parts.push(a.state);
-        if (a.postcode) parts.push(a.postcode);
-        
-        let address = parts.filter(Boolean).map(s => s.trim()).filter(s => s).join(', ');
-        if (!address) address = data.display_name || `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
-        
-        locationData.text = address;
-        el.textContent = address;
-      } else {
-        locationData.text = data.display_name || `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
-        el.textContent = locationData.text;
-      }
-    })
-    .catch(() => {
-      locationData.text = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
-      el.textContent = locationData.text;
-    });
-}
-
-function geocodeWithDebounce(lat, lng) {
-  clearTimeout(geocodeTimeout);
-  geocodeTimeout = setTimeout(() => reverseGeocode(lat, lng), 400);
-}
-
-// ====== LEAFLET MAP ======
-function initMap() {
-  const container = document.getElementById('leaflet-map');
-  if (!container || leafletMap) return;
-
-  leafletMap = L.map('leaflet-map', {
-    center: [locationData.lat, locationData.lng],
-    zoom: 17,
-    zoomControl: false,
-    attributionControl: false,
-  });
-
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(leafletMap);
-
-  // Custom purple pin
-  const purplePin = L.divIcon({
-    className: '',
-    html: `<svg width="40" height="50" viewBox="0 0 40 50" style="filter:drop-shadow(0 3px 6px rgba(168,85,247,0.5))">
-      <path d="M20 47C20 47 36 28 36 18C36 9.2 28.8 2 20 2C11.2 2 4 9.2 4 18C4 28 20 47 20 47Z" fill="#A855F7" stroke="white" stroke-width="2.5"/>
-      <circle cx="20" cy="18" r="6.5" fill="white"/>
-    </svg>`,
-    iconSize: [40, 50],
-    iconAnchor: [20, 47],
-  });
-
-  leafletMarker = L.marker([locationData.lat, locationData.lng], {
-    icon: purplePin,
-    draggable: true,
-  }).addTo(leafletMap);
-
-  // Drag pin → update address
-  leafletMarker.on('dragend', function(e) {
-    const p = e.target.getLatLng();
-    locationData.lat = p.lat;
-    locationData.lng = p.lng;
-    geocodeWithDebounce(p.lat, p.lng);
-  });
-
-  // Tap map → move pin + update address
-  leafletMap.on('click', function(e) {
-    leafletMarker.setLatLng(e.latlng);
-    locationData.lat = e.latlng.lat;
-    locationData.lng = e.latlng.lng;
-    geocodeWithDebounce(e.latlng.lat, e.latlng.lng);
-  });
-
-  // Initial geocode
-  reverseGeocode(locationData.lat, locationData.lng);
-  
-  setTimeout(() => leafletMap.invalidateSize(), 120);
-}
-
-function destroyMap() {
-  if (leafletMap) {
-    leafletMap.remove();
-    leafletMap = null;
-    leafletMarker = null;
-  }
-}
-
-// ====== CAMERA ======
-function startCamera() {
-  const video = document.getElementById('camera-video');
-  const fallback = document.getElementById('camera-fallback');
-  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
-      .then(stream => {
-        cameraStream = stream;
-        video.srcObject = stream;
-        video.style.display = 'block';
-        fallback.style.display = 'none';
-      })
-      .catch(() => {
-        video.style.display = 'none';
-        fallback.style.display = 'flex';
-      });
-  }
-}
-
-function stopCamera() {
-  if (cameraStream) {
-    cameraStream.getTracks().forEach(t => t.stop());
-    cameraStream = null;
-  }
-  document.getElementById('camera-video').style.display = 'none';
-  document.getElementById('camera-fallback').style.display = 'flex';
-}
-
-function capturePhoto() {
-  const video = document.getElementById('camera-video');
-  if (cameraStream && video.videoWidth) {
-    const c = document.createElement('canvas');
-    c.width = video.videoWidth; c.height = video.videoHeight;
-    c.getContext('2d').drawImage(video, 0, 0);
-  }
-  stopCamera();
-  
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-      pos => {
-        locationData.lat = pos.coords.latitude;
-        locationData.lng = pos.coords.longitude;
-        locationData.text = 'Fetching address...';
-        goTo('location');
-      },
-      () => {
-        locationData.lat = 42.0565;
-        locationData.lng = -87.6753;
-        locationData.text = 'Fetching address...';
-        goTo('location');
-      },
-      { enableHighAccuracy: true, timeout: 8000 }
-    );
-  } else {
-    goTo('location');
-  }
-}
-
-// ====== DESCRIBE ======
-function showChat() {
-  document.getElementById('desc-choices').style.display = 'none';
-  document.getElementById('desc-chat').style.display = 'flex';
-  document.getElementById('issue-input').focus();
-}
-
-function resetDescribe() {
-  document.getElementById('desc-choices').style.display = 'flex';
-  document.getElementById('desc-chat').style.display = 'none';
-  document.getElementById('issue-input').value = '';
-  document.getElementById('done-btn').disabled = true;
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('issue-input').addEventListener('input', (e) => {
-    document.getElementById('done-btn').disabled = !e.target.value.trim();
-  });
-});
-
-function submitIssue() {
-  const text = document.getElementById('issue-input').value.trim();
-  if (!text) return;
-  issues.unshift({ id: Date.now(), text, location: locationData.text, time: new Date().toLocaleString() });
-  goTo('reported');
-  setTimeout(() => goTo('home'), 2500);
-  updateBadge();
-}
-
-function updateBadge() {
-  const b = document.getElementById('badge-count');
-  if (issues.length > 0) { b.style.display = 'flex'; b.textContent = issues.length; }
-  else b.style.display = 'none';
-}
-
-function renderIssues() {
-  const list = document.getElementById('issues-list');
-  const noEl = document.getElementById('no-issues');
-  if (issues.length === 0) { list.innerHTML = ''; noEl.style.display = 'flex'; return; }
-  noEl.style.display = 'none';
-  list.innerHTML = issues.map((issue, i) => `
-    <div class="issue-card" style="margin-bottom:12px;animation-delay:${i * 0.08}s;">
-      <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:10px;">
-        <span class="status">PENDING</span>
-        <span style="color:#9B8FBF;font-size:11px;">${issue.time}</span>
-      </div>
-      <p style="font-size:14px;margin:0 0 10px;line-height:1.5;">${issue.text}</p>
-      <div style="display:flex;align-items:center;gap:6px;">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="#A855F7" stroke="none"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
-        <span style="color:#9B8FBF;font-size:12px;">${issue.location}</span>
-      </div>
-    </div>
-  `).join('');
-}
-</script>
+<script src="config.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
