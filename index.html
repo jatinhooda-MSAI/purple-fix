@@ -97,6 +97,27 @@
   .issue-textarea:focus { border-color: #A855F7; }
   .issue-textarea::placeholder { color: #9B8FBF; opacity: 0.6; }
 
+  .form-select {
+    width: 100%; padding: 16px 18px; border-radius: 16px;
+    border: 1.5px solid #2A2050; background: #171331;
+    color: #F0F0F0; font-size: 15px; font-family: inherit;
+    outline: none; cursor: pointer; appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239B8FBF' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 16px center; padding-right: 44px;
+    transition: border-color 0.2s;
+  }
+  .form-select:focus { border-color: #A855F7; }
+  .form-select option { background: #171331; color: #F0F0F0; }
+  .form-label { font-size: 13px; font-weight: 600; color: #9B8FBF; margin-bottom: 8px; display: block; }
+  .form-input {
+    width: 100%; padding: 16px 18px; border-radius: 16px;
+    border: 1.5px solid #2A2050; background: #171331;
+    color: #F0F0F0; font-size: 15px; font-family: inherit;
+    outline: none; transition: border-color 0.2s;
+  }
+  .form-input:focus { border-color: #A855F7; }
+  .form-input::placeholder { color: #9B8FBF; opacity: 0.6; }
+
   /* Leaflet map */
   #leaflet-map {
     width: 100%; flex: 1; min-height: 0;
@@ -181,7 +202,7 @@
   </div>
 
   <!-- LOGIN -->
-  <div id="screen-login" class="screen" style="align-items:center;justify-content:center;padding:32px;gap:40px;">
+  <div id="screen-login" class="screen" style="align-items:center;justify-content:center;padding:32px;gap:28px;">
     <div style="text-align:center">
       <div style="width:80px;height:80px;border-radius:20px;margin:0 auto 24px;background:linear-gradient(135deg,#A855F7,#C084FC);display:flex;align-items:center;justify-content:center;box-shadow:0 12px 40px rgba(168,85,247,0.35);">
         <span style="font-family:'Space Mono',monospace;font-size:36px;font-weight:700;color:white;">N</span>
@@ -189,7 +210,17 @@
       <h1 style="font-family:'Space Mono',monospace;font-size:28px;font-weight:700;letter-spacing:-0.5px;">CatsOnVigil</h1>
       <p style="color:#9B8FBF;font-size:14px;margin-top:8px;line-height:1.5;">Report & track civic issues<br>on the campus</p>
     </div>
-    <button class="btn-primary" onclick="goTo('home')" style="letter-spacing:1px;">LOGIN</button>
+    <div style="width:100%;display:flex;flex-direction:column;gap:16px;">
+      <div>
+        <label class="form-label" for="login-username">Username</label>
+        <input type="text" id="login-username" class="form-input" placeholder="Enter your username" autocomplete="username">
+      </div>
+      <div>
+        <label class="form-label" for="login-password">Password</label>
+        <input type="password" id="login-password" class="form-input" placeholder="Enter your password" autocomplete="current-password">
+      </div>
+    </div>
+    <button class="btn-primary" onclick="doLogin()" style="letter-spacing:1px;width:100%;">LOGIN</button>
   </div>
 
   <!-- HOME -->
@@ -224,6 +255,22 @@
     </div>
   </div>
 
+  <!-- PHOTO PREVIEW (retake or use) -->
+  <div id="screen-preview" class="screen hidden" style="padding:20px;gap:20px;">
+    <h3 style="font-size:18px;font-weight:700;">Review your photo</h3>
+    <p style="color:#9B8FBF;font-size:13px;">Retake if you're unhappy with it, or use this photo to continue.</p>
+    <div style="flex:1;min-height:0;display:flex;align-items:center;justify-content:center;background:#000;border-radius:16px;overflow:hidden;border:1.5px solid #2A2050;">
+      <img id="preview-img" src="" alt="Captured photo" style="max-width:100%;max-height:100%;object-fit:contain;">
+    </div>
+    <div style="display:flex;gap:12px;">
+      <button class="btn-secondary" onclick="retakePhoto()" style="flex:1;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+        Retake
+      </button>
+      <button class="btn-green" onclick="confirmPhoto()" style="flex:1;">Use photo</button>
+    </div>
+  </div>
+
   <!-- LOCATION -->
   <div id="screen-location" class="screen hidden" style="padding:16px;gap:10px;">
     <h3 style="font-size:18px;font-weight:700;">Confirm your location</h3>
@@ -242,20 +289,33 @@
   <!-- DESCRIBE -->
   <div id="screen-describe" class="screen hidden" style="padding:20px;gap:20px;">
     <h3 style="font-size:18px;font-weight:700;">Describe the issue</h3>
-    <p style="color:#9B8FBF;font-size:13px;">Choose how you'd like to report</p>
-    <div id="desc-choices" style="display:flex;gap:16px;margin-top:8px;">
-      <button class="choice-btn disabled">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#9B8FBF" stroke-width="2" stroke-linecap="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg>
-        <span style="color:#9B8FBF;font-size:13px;font-weight:600;">Voice</span>
-        <span style="color:#9B8FBF;font-size:10px;opacity:0.6;">Coming soon</span>
-      </button>
-      <button class="choice-btn active" onclick="showChat()">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-        <span style="color:#A855F7;font-size:13px;font-weight:600;">Chat</span>
-      </button>
-    </div>
-    <div id="desc-chat" style="display:none;flex:1;flex-direction:column;gap:16px;">
-      <textarea id="issue-input" class="issue-textarea" placeholder="Describe the issue you'd like to report..."></textarea>
+    <p style="color:#9B8FBF;font-size:13px;">Select the object and issue type</p>
+    <div id="desc-form" style="display:flex;flex-direction:column;gap:16px;flex:1;">
+      <div>
+        <label class="form-label" for="object-select">Object</label>
+        <select id="object-select" class="form-select">
+          <option value="">Select object...</option>
+          <option value="microwave">Microwave</option>
+          <option value="water fountain">Water fountain</option>
+          <option value="elevator">Elevator</option>
+          <option value="restroom">Restroom</option>
+          <option value="lighting">Lighting</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div>
+        <label class="form-label" for="issue-select">Issue</label>
+        <select id="issue-select" class="form-select">
+          <option value="">Select issue...</option>
+          <option value="broken">Broken</option>
+          <option value="dirty">Dirty</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div style="flex:1;display:flex;flex-direction:column;min-height:100px;">
+        <label class="form-label" for="issue-extra">Extra description (optional)</label>
+        <textarea id="issue-extra" class="issue-textarea" placeholder="Add any additional details..."></textarea>
+      </div>
       <button class="btn-primary" id="done-btn" onclick="submitIssue()" disabled>Done</button>
     </div>
   </div>
@@ -290,12 +350,14 @@
 <script>
 // ====== STATE ======
 let currentScreen = 'login';
+let hasLoggedIn = false;
 let cameraStream = null;
 let issues = [];
 let locationData = { lat: 42.0565, lng: -87.6753, text: 'Fetching address...' };
 let leafletMap = null;
 let leafletMarker = null;
 let geocodeTimeout = null;
+let capturedPhotoDataUrl = null;
 
 // ====== CLOCK ======
 function updateClock() {
@@ -306,6 +368,11 @@ setInterval(updateClock, 10000);
 
 // ====== NAVIGATION ======
 function goTo(screen) {
+  // Require login before home, camera (scan & report), or track
+  const protectedScreens = ['home', 'camera', 'track'];
+  if (protectedScreens.includes(screen) && !hasLoggedIn) {
+    screen = 'login';
+  }
   const currentEl = document.getElementById('screen-' + currentScreen);
   currentEl.classList.add('fading');
   
@@ -318,14 +385,24 @@ function goTo(screen) {
     if (currentScreen === 'location') destroyMap();
     
     if (screen === 'camera') startCamera();
+    if (screen === 'preview') {
+      document.getElementById('preview-img').src = capturedPhotoDataUrl || '';
+    }
     if (screen === 'track') renderIssues();
+    if (screen === 'describe') resetDescribe();
     
+    if (screen === 'login') hasLoggedIn = false;
     const nextEl = document.getElementById('screen-' + screen);
     nextEl.classList.remove('hidden');
     currentScreen = screen;
     
     if (screen === 'location') setTimeout(initMap, 80);
   }, 250);
+}
+
+function doLogin() {
+  hasLoggedIn = true;
+  goTo('home');
 }
 
 // ====== REVERSE GEOCODE via Nominatim ======
@@ -466,11 +543,23 @@ function capturePhoto() {
   const video = document.getElementById('camera-video');
   if (cameraStream && video.videoWidth) {
     const c = document.createElement('canvas');
-    c.width = video.videoWidth; c.height = video.videoHeight;
+    c.width = video.videoWidth;
+    c.height = video.videoHeight;
     c.getContext('2d').drawImage(video, 0, 0);
+    capturedPhotoDataUrl = c.toDataURL('image/jpeg');
+  } else {
+    capturedPhotoDataUrl = null;
   }
   stopCamera();
-  
+  goTo('preview');
+}
+
+function retakePhoto() {
+  capturedPhotoDataUrl = null;
+  goTo('camera');
+}
+
+function confirmPhoto() {
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
       pos => {
@@ -493,29 +582,39 @@ function capturePhoto() {
 }
 
 // ====== DESCRIBE ======
-function showChat() {
-  document.getElementById('desc-choices').style.display = 'none';
-  document.getElementById('desc-chat').style.display = 'flex';
-  document.getElementById('issue-input').focus();
+function resetDescribe() {
+  document.getElementById('object-select').value = '';
+  document.getElementById('issue-select').value = '';
+  document.getElementById('issue-extra').value = '';
+  updateDoneButton();
 }
 
-function resetDescribe() {
-  document.getElementById('desc-choices').style.display = 'flex';
-  document.getElementById('desc-chat').style.display = 'none';
-  document.getElementById('issue-input').value = '';
-  document.getElementById('done-btn').disabled = true;
+function updateDoneButton() {
+  const obj = document.getElementById('object-select').value;
+  const issue = document.getElementById('issue-select').value;
+  document.getElementById('done-btn').disabled = !obj || !issue;
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('issue-input').addEventListener('input', (e) => {
-    document.getElementById('done-btn').disabled = !e.target.value.trim();
-  });
+  document.getElementById('object-select').addEventListener('change', updateDoneButton);
+  document.getElementById('issue-select').addEventListener('change', updateDoneButton);
 });
 
 function submitIssue() {
-  const text = document.getElementById('issue-input').value.trim();
-  if (!text) return;
-  issues.unshift({ id: Date.now(), text, location: locationData.text, time: new Date().toLocaleString() });
+  const object = document.getElementById('object-select').value;
+  const issue = document.getElementById('issue-select').value;
+  const extra = document.getElementById('issue-extra').value.trim();
+  if (!object || !issue) return;
+  const text = [object, issue].join(' — ') + (extra ? ': ' + extra : '');
+  issues.unshift({
+    id: Date.now(),
+    object,
+    issue,
+    extra,
+    text,
+    location: locationData.text,
+    time: new Date().toLocaleString()
+  });
   goTo('reported');
   setTimeout(() => goTo('home'), 2500);
   updateBadge();
@@ -539,6 +638,7 @@ function renderIssues() {
         <span style="color:#9B8FBF;font-size:11px;">${issue.time}</span>
       </div>
       <p style="font-size:14px;margin:0 0 10px;line-height:1.5;">${issue.text}</p>
+      ${issue.extra ? `<p style="font-size:13px;margin:0 0 10px;color:#9B8FBF;line-height:1.5;">${issue.extra}</p>` : ''}
       <div style="display:flex;align-items:center;gap:6px;">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="#A855F7" stroke="none"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
         <span style="color:#9B8FBF;font-size:12px;">${issue.location}</span>

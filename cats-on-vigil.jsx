@@ -151,19 +151,28 @@ function CameraView({ onCapture }) {
 
 export default function CivicReportApp() {
   const [screen, setScreen] = useState("login"); // login, home, camera, location, describe, reported, track
+  const [hasLoggedIn, setHasLoggedIn] = useState(false);
   const [photo, setPhoto] = useState(null);
   const [location, setLocation] = useState({ lat: 32.2319, lng: 110.9501, text: "1234 E University Blvd, Tucson, AZ 85721" });
-  const [descMode, setDescMode] = useState(null); // null, "chat"
-  const [issueText, setIssueText] = useState("");
+  const [objectType, setObjectType] = useState("");
+  const [issueType, setIssueType] = useState("");
+  const [issueExtra, setIssueExtra] = useState("");
   const [issues, setIssues] = useState([]);
   const [fadeIn, setFadeIn] = useState(true);
 
   const transition = (next) => {
+    const protectedScreens = ["home", "camera", "track"];
+    if (protectedScreens.includes(next) && !hasLoggedIn) next = "login";
+    if (next === "login") setHasLoggedIn(false);
     setFadeIn(false);
     setTimeout(() => { setScreen(next); setFadeIn(true); }, 200);
   };
 
-  const handleLogin = () => transition("home");
+  const handleLogin = () => {
+    setHasLoggedIn(true);
+    setFadeIn(false);
+    setTimeout(() => { setScreen("home"); setFadeIn(true); }, 200);
+  };
 
   const handleCapture = (img) => {
     setPhoto(img);
@@ -188,16 +197,22 @@ export default function CivicReportApp() {
   const handleConfirmLocation = () => transition("describe");
 
   const handleDone = () => {
+    if (!objectType || !issueType) return;
+    const text = [objectType, issueType].join(" — ") + (issueExtra.trim() ? ": " + issueExtra.trim() : "");
     const newIssue = {
       id: Date.now(),
-      text: issueText || "No description provided",
+      object: objectType,
+      issue: issueType,
+      extra: issueExtra.trim(),
+      text,
       location: location.text,
       time: new Date().toLocaleString(),
       photo,
     };
     setIssues(prev => [newIssue, ...prev]);
-    setIssueText("");
-    setDescMode(null);
+    setObjectType("");
+    setIssueType("");
+    setIssueExtra("");
     transition("reported");
     setTimeout(() => transition("home"), 2500);
   };
@@ -375,79 +390,91 @@ export default function CivicReportApp() {
               Describe the issue
             </h3>
             <p style={{ color: COLORS.textDim, fontSize: 13, margin: 0 }}>
-              Choose how you'd like to report
+              Select the object and issue type
             </p>
 
-            {!descMode && (
-              <div style={{ display: "flex", gap: 16, marginTop: 8 }}>
-                {/* Mic button */}
-                <button style={{
-                  flex: 1, aspectRatio: "1", borderRadius: 20,
-                  border: `1.5px solid ${COLORS.border}`, background: COLORS.surface,
-                  display: "flex", flexDirection: "column", alignItems: "center",
-                  justifyContent: "center", gap: 10, cursor: "pointer",
-                  opacity: 0.5, transition: "opacity 0.2s",
-                }}>
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke={COLORS.textDim} strokeWidth="2" strokeLinecap="round">
-                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
-                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/>
-                  </svg>
-                  <span style={{ color: COLORS.textDim, fontSize: 13, fontWeight: 600 }}>Voice</span>
-                  <span style={{ color: COLORS.textDim, fontSize: 10, opacity: 0.6 }}>Coming soon</span>
-                </button>
-
-                {/* Chat button */}
-                <button onClick={() => setDescMode("chat")} style={{
-                  flex: 1, aspectRatio: "1", borderRadius: 20,
-                  border: `1.5px solid ${COLORS.accent}`, background: COLORS.accentSoft,
-                  display: "flex", flexDirection: "column", alignItems: "center",
-                  justifyContent: "center", gap: 10, cursor: "pointer",
-                  transition: "transform 0.15s",
-                }}
-                onMouseDown={e => { e.currentTarget.style.transform = "scale(0.95)"; }}
-                onMouseUp={e => { e.currentTarget.style.transform = "scale(1)"; }}
+            <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 16 }}>
+              <div>
+                <label style={{ fontSize: 13, fontWeight: 600, color: COLORS.textDim, marginBottom: 8, display: "block" }}>
+                  Object
+                </label>
+                <select
+                  value={objectType}
+                  onChange={e => setObjectType(e.target.value)}
+                  style={{
+                    width: "100%", padding: "16px 18px", borderRadius: 16,
+                    border: `1.5px solid ${COLORS.border}`, background: COLORS.surface,
+                    color: COLORS.text, fontSize: 15, fontFamily: "inherit",
+                    outline: "none", cursor: "pointer", appearance: "none",
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239B8FBF' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E")`,
+                    backgroundRepeat: "no-repeat", backgroundPosition: "right 16px center", paddingRight: 44,
+                  }}
                 >
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke={COLORS.accent} strokeWidth="2" strokeLinecap="round">
-                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-                  </svg>
-                  <span style={{ color: COLORS.accent, fontSize: 13, fontWeight: 600 }}>Chat</span>
-                </button>
+                  <option value="">Select object...</option>
+                  <option value="microwave">Microwave</option>
+                  <option value="water fountain">Water fountain</option>
+                  <option value="elevator">Elevator</option>
+                  <option value="restroom">Restroom</option>
+                  <option value="lighting">Lighting</option>
+                  <option value="other">Other</option>
+                </select>
               </div>
-            )}
-
-            {descMode === "chat" && (
-              <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 16 }}>
+              <div>
+                <label style={{ fontSize: 13, fontWeight: 600, color: COLORS.textDim, marginBottom: 8, display: "block" }}>
+                  Issue
+                </label>
+                <select
+                  value={issueType}
+                  onChange={e => setIssueType(e.target.value)}
+                  style={{
+                    width: "100%", padding: "16px 18px", borderRadius: 16,
+                    border: `1.5px solid ${COLORS.border}`, background: COLORS.surface,
+                    color: COLORS.text, fontSize: 15, fontFamily: "inherit",
+                    outline: "none", cursor: "pointer", appearance: "none",
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239B8FBF' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E")`,
+                    backgroundRepeat: "no-repeat", backgroundPosition: "right 16px center", paddingRight: 44,
+                  }}
+                >
+                  <option value="">Select issue...</option>
+                  <option value="broken">Broken</option>
+                  <option value="dirty">Dirty</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 100 }}>
+                <label style={{ fontSize: 13, fontWeight: 600, color: COLORS.textDim, marginBottom: 8, display: "block" }}>
+                  Extra description (optional)
+                </label>
                 <textarea
-                  autoFocus
-                  placeholder="Describe the issue you'd like to report..."
-                  value={issueText}
-                  onChange={e => setIssueText(e.target.value)}
+                  placeholder="Add any additional details..."
+                  value={issueExtra}
+                  onChange={e => setIssueExtra(e.target.value)}
                   style={{
                     flex: 1, borderRadius: 16, padding: 18,
                     border: `1.5px solid ${COLORS.border}`, background: COLORS.surface,
                     color: COLORS.text, fontSize: 15, fontFamily: "inherit",
                     resize: "none", outline: "none", lineHeight: 1.6,
-                    transition: "border-color 0.2s",
                   }}
-                  onFocus={e => e.target.style.borderColor = COLORS.accent}
-                  onBlur={e => e.target.style.borderColor = COLORS.border}
                 />
-                <button onClick={handleDone} style={{
+              </div>
+              <button
+                onClick={handleDone}
+                disabled={!objectType || !issueType}
+                style={{
                   width: "100%", padding: "18px 0", borderRadius: 16, border: "none",
                   background: `linear-gradient(135deg, ${COLORS.accent}, #C084FC)`,
                   color: "white", fontSize: 16, fontWeight: 700, cursor: "pointer",
                   boxShadow: `0 8px 32px ${COLORS.accentGlow}`,
                   fontFamily: "inherit",
-                  opacity: issueText.trim() ? 1 : 0.5,
+                  opacity: objectType && issueType ? 1 : 0.5,
                   transition: "transform 0.15s, opacity 0.2s",
                 }}
                 onMouseDown={e => { e.target.style.transform = "scale(0.97)"; }}
                 onMouseUp={e => { e.target.style.transform = "scale(1)"; }}
-                >
-                  Done
-                </button>
-              </div>
-            )}
+              >
+                Done
+              </button>
+            </div>
           </div>
         )}
 
@@ -540,6 +567,11 @@ export default function CivicReportApp() {
                   <p style={{ color: COLORS.text, fontSize: 14, margin: "0 0 10px", lineHeight: 1.5 }}>
                     {issue.text}
                   </p>
+                  {issue.extra ? (
+                    <p style={{ color: COLORS.textDim, fontSize: 13, margin: "0 0 10px", lineHeight: 1.5 }}>
+                      {issue.extra}
+                    </p>
+                  ) : null}
                   <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                     <svg width="12" height="12" viewBox="0 0 24 24" fill={COLORS.accent} stroke="none">
                       <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
