@@ -34,37 +34,13 @@ The current facility reporting flow at Northwestern is often complex and hard to
 
 ---
 
-## ⚙️ Getting Started
+## How to Access:
+Easiest to access via mobile or via any web browser at:
 
-### Prerequisites
-* Node.js (v18+)
-* A Supabase project and an Azure account.
-
-### Installation
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/jatinhooda-MSAI/purple-fix.git
-    cd purple-fix
-    ```
-2.  **Install dependencies:**
-    ```bash
-    npm install
-    ```
-3.  **Environment Variables:**
-    Create a `.env` file in the root directory:
-    ```env
-    VITE_SUPABASE_URL=your_supabase_url
-    VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-    ```
-4.  **Launch the development server:**
-    ```bash
-    npm run dev
-    ```
+[PurpleFix](https://yellow-moss-0fd27dd10.6.azurestaticapps.net/)
 
 ---
 
 ## 🤝 Contributing
 Contributions are welcome! If you're a student or developer looking to improve campus infrastructure, feel free to fork this repo and submit a pull request.
 
-## 📄 License
-This project is licensed under the [MIT License](LICENSE).
